@@ -1,0 +1,46 @@
+[package]
+name = "matar"
+version = "0.1.0"
+authors = ["Claudio Fernandes de Souza Rodrigues <claudiofsrodrigues@gmail.com>"]
+edition = "2024"
+description = "A robust process termination utility for Linux."
+homepage = "https://github.com/claudiofsr/matar"
+repository = "https://github.com/claudiofsr/matar"
+keywords = ["linux", "process", "kill", "sysadmin"]
+categories = ["command-line-utilities", "system-administration"]
+license = "GPL-3.0-or-later"
+
+[package.metadata.extra]
+long_about = """
+Matar is a high-performance process termination utility designed for Linux environments. 
+It implements advanced PID filtering to ensure system stability by automatically 
+excluding system-critical PIDs (<= 1000), the current process, and its parent. 
+
+Using a safety-first approach, it performs a two-stage cleaning process: 
+an initial SIGKILL followed by a verification pass to handle persistent or 
+zombie processes, ensuring a clean system state without accidental 'self-suicide'.
+"""
+
+[dependencies]
+# nix permite lidar com sinais do sistema de forma nativa (SIGKILL)
+nix = { version = "0.31", features = ["signal", "process", "user"] }
+clap = { version = "4.6", features = ["derive", "cargo"] }
+tabled = { version = "0.20", features = ["ansi"] }
+thiserror = "2.0"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[profile.release]
+# https://doc.rust-lang.org/cargo/reference/profiles.html
+debug = false           # No debug info at all.
+strip = "symbols"       # Strip symbols from a binary.
+opt-level = 3           # All optimizations.
+overflow-checks = true  # Panic will occur on overflow.
+lto = true              # Enable link time optimization.
+codegen-units = 1       # Use a single codegen for size optimization.
+panic = "abort"         # Remove traceback information.
+incremental = true      # Save information to disk, improving re-compile times.
+
+[profile.dev]
+opt-level = 1           # Use slightly better optimizations.
