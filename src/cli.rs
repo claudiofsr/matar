@@ -1,4 +1,23 @@
-use clap::Parser;
+use clap::{
+    Parser,
+    builder::{
+        Styles,
+        styling::{AnsiColor, Effects},
+    },
+};
+
+/// Custom Clap styling to mimic a beautiful colored help menu.
+fn get_styles() -> Styles {
+    let cyan = AnsiColor::Cyan.on_default();
+    let green = AnsiColor::Green.on_default();
+    let yellow = AnsiColor::Yellow.on_default();
+
+    Styles::styled()
+        .header(yellow | Effects::BOLD)
+        .usage(yellow | Effects::BOLD)
+        .literal(green)
+        .placeholder(cyan)
+}
 
 #[derive(Parser, Debug)]
 #[command(
@@ -6,7 +25,8 @@ use clap::Parser;
     author,
     version,
     about = "A robust process termination utility.",
-    long_about = None
+    long_about = None,
+    styles=get_styles(),
 )]
 pub struct Args {
     /// The name or pattern of the process to terminate
